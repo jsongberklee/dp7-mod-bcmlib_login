@@ -1,0 +1,50 @@
+<?php 
+/**
+ * Alter the user_login_block form element
+ * Adding berklee onepass logo
+ */
+function bcmlib_login_form_user_login_block_alter(&$form, &$form_state) {
+	
+	// below line is for the user notice in login block
+	// $form['usernotice'] = array('#markup' => '<div style="color:red">*Attention (10/24/2013)* <br /> Due to maintenance between 6pm & 10pm EST, there may be intermittent interruptions to logging in.<br /><br /></div>', '#weight'=> 0); 
+
+	// the function path_to_theme() doesn't work if a module has it's own them path, so static url is used
+	//$form['onepass'] = array('#markup' => '<div id="onepasslogo"><img src="/'.path_to_theme().'/images/onepass_logo_h80.png" /></div>', '#weight'=> 11); 
+	$form['onepass'] = array('#markup' => '<div id="onepasslogo"><img src="/'.drupal_get_path('module', 'bcmlib_login').'/images/onepass_logo_h80.png" /></div>', '#weight'=> 11); 
+	$form['actions']['#weight'] = 10; 
+	$form['name']['#title'] = t('Berklee email');		
+	$form['name']['#description'] = t('Berklee email address with or without "@berklee.edu"');		
+	$form['pass']['#description'] = t('Berklee email password');
+	array_unshift($form['#validate'], '_validate_username');
+} 
+/**
+ * Alter the user_login form element
+ * Adding berklee onepass logo
+ * egillis: edit here for outage notice
+ */
+function bcmlib_login_form_user_login_alter(&$form, &$form_state) {
+
+	// below line is for the user notice in login block
+	// $form['usernotice'] = array('#markup' => '<div style="color:red">*Attention (10/24/2013)* <br /> Due to maintenance between 6pm & 10pm EST, there may be intermittent interruptions to logging in.<br /><br /></div>', '#weight'=> 0);
+	
+	// the function path_to_theme() doesn't work if a module has it's own them path, so static url is used
+	//$form['onepass'] = array('#markup' => '<div id="onepasslogo"><img src="/'.path_to_theme().'/images/onepass_logo_h80.png" /></div>', '#weight'=> 11); 
+	$form['onepass'] = array('#markup' => '<div id="onepasslogo"><img src="/'.drupal_get_path('module', 'bcmlib_login').'/images/onepass_logo_h80.png" /></div>', '#weight'=> 11); 
+	$form['actions']['#weight'] = 10;
+	$form['name']['#title'] = t('Berklee email');
+	$form['name']['#description'] = t('Berklee email address with or without "@berklee.edu"');			
+	$form['pass']['#description'] = t('Berklee email password');			
+	array_unshift($form['#validate'], '_validate_username');		
+}
+/**
+ * custom validate function
+ * Adding the string "@berklee.edu" at the end of what user type in for username
+ * This function must be add to top of the validator callback array before ldap module's validator
+ */
+function _validate_username(&$form, &$form_state){
+	if(stripos($form['name']['#value'], "@") === false)
+	{
+		//$form_state['input']['name'] = $form['name']['#value']."@berklee.edu"; 
+		form_set_value($form['name'], $form['name']['#value']."@berklee.edu", $form_state);
+	}
+}
